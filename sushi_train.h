@@ -7,5 +7,5 @@ typedef struct tray {
   struct tray* next,
 }trayType,*ptrTray;
 #define MAX_LEN 23
-ptrTray push(void);
+ptrTray push();
 //push pop functions

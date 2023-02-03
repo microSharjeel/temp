@@ -1,22 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX_LEN 23
+#include <sushi_train.h>
+
 FILE* infile;
 const char* file_path;
 char str[MAX_LEN+1];
 char* token;
 char* sub_str[4];
-unsigned short i;
+unsigned short index;
 unsigned short scan_in,scan_out;
 unsigned short time[3];
 /////////////////////////////// change it 
-static nptr current_node=NULL;
-static nptr first_node=NULL;
+static ptrTray current_node=NULL;
+static ptrTray first_node=NULL;
 ///////////////////////////////
 int main(int argc,char**argv)
 {
-  i=0;
+  index=0;
   file_path=argv[1];
 /////////////////////////////////////////////////////////////////// in one function
   infile=fopen(file_path,"r");
@@ -33,7 +34,7 @@ int main(int argc,char**argv)
 	  printf("%s\n",str);
 	  token = strtok(str,",");
 	  puts(token);
-	  sub_str[i++]=token;
+	  sub_str[index++]=token;
 	  while(token!=NULL)
 	  {
 	   	token = strtok(NULL,",");
@@ -41,37 +42,38 @@ int main(int argc,char**argv)
 	        if(token!=NULL)
 	        {
 	        	puts(token);
-	        	sub_str[i]=token;
+	        	sub_str[index]=token;
 	        }
-	        i++;
+	        index++;
 	  }
-	  i=0;
+	  index=0;
 	scan_in=atoi(sub_str[2]);
 	scan_out=atoi(sub_str[3]);
 	/////////////////////////////
 	while(scan_in)
 	{
-	   i=0;
+	   index=0;
 	   token = strtok(sub_str[1],":");
 	   puts(token);
-           time[i]=atoi(token);
+           time[index]=atoi(token);
 	  while(token!=NULL)
 	  {
-
 	   	token = strtok(NULL,":");
-	        
 	        if(token!=NULL)
 	        {
 	        	puts(token);
-	        	time[++i]=atoi(token);
+	        	time[++index]=atoi(token);
 	        }
 	  }
-	  i=0;
-	  //push here
+	  scan_in--;
+          current_node=push();
+	  if(first_node==NULL)
+	  	first_node=current_node;
 	}
-	//while(scan_out)  add scan out
-	//{
-	//pop here 
+	/////////////////////////////
+	while(scan_out) 
+	{
+		 
 	}
       }
 	/////////////////////// change it
@@ -81,19 +83,18 @@ int main(int argc,char**argv)
       //first_node=add_node(i);
      //else
        //current_node=add_node(i);
-    }
-
   }
-////////////////////////////////////////////////////////////////////////////////////////
   fclose(infile);	
   return 0;
 }
+////////////////////////////////////////////////////////////////////////////////////////
  ptrTray push()
   {
 	ptrTray ptr= (ptrTray) malloc(sizeof(trayType));//&newTray;
 	ptr->hour=time[0];
 	ptr->min=time[1];
 	ptr->sec=time[2];
+	ptr->next=NULL;
 	return ptr;
   }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

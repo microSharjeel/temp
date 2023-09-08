@@ -66,6 +66,12 @@ int main(int argc,char**argv)
 	        }
 	  }
 	  scan_in--;
+	  if(current_node!=NULL)
+	  {
+	   current_node->next=push();
+	   current_node=current_node->next;
+	  }
+	  else
           current_node=push();
 	  if(first_node==NULL)
 	  	first_node=current_node;
@@ -73,16 +79,11 @@ int main(int argc,char**argv)
 	/////////////////////////////
 	while(scan_out) 
 	{
-		 
+	  first_node=first_node->next;
+	  //pop()	add here	
+	  scan_out--; 
 	}
       }
-	/////////////////////// change it
-	//
-	//ptrTray =push();
-	//if(current_node==NULL)
-      //first_node=add_node(i);
-     //else
-       //current_node=add_node(i);
   }
   fclose(infile);	
   return 0;

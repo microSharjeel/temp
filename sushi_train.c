@@ -11,15 +11,14 @@ char* sub_str[4];
 unsigned short index;
 unsigned short scan_in,scan_out;
 unsigned short time[3];
-/////////////////////////////// change it 
 static ptrTray current_node=NULL;
 static ptrTray first_node=NULL;
-///////////////////////////////
+static unsigned short grand_total;
+
 int main(int argc,char**argv)
 {
   index=0;
   file_path=argv[1];
-/////////////////////////////////////////////////////////////////// in one function
   infile=fopen(file_path,"r");
   if(infile==NULL)
   {
@@ -31,9 +30,9 @@ int main(int argc,char**argv)
   	printf("\nfile opened\n");
   	while(fscanf(infile,"%s",str)!=EOF)
 	{
-	  printf("%s\n",str);
+	  //printf("%s\n",str);
 	  token = strtok(str,",");
-	  puts(token);
+	  //puts(token);
 	  sub_str[index++]=token;
 	  while(token!=NULL)
 	  {
@@ -41,85 +40,119 @@ int main(int argc,char**argv)
 	        
 	        if(token!=NULL)
 	        {
-	        	puts(token);
+	    //    	puts(token);
 	        	sub_str[index]=token;
 	        }
 	        index++;
 	  }
-	  index=0;
+	index=0;
 	scan_in=atoi(sub_str[2]);
 	scan_out=atoi(sub_str[3]);
-	/////////////////////////////
-	while(scan_in)
-	{
-	   index=0;
-	   token = strtok(sub_str[1],":");
-	   puts(token);
-           time[index]=atoi(token);
-	  while(token!=NULL)
-	  {
+	token = strtok(sub_str[1],":");
+	//puts(token);
+        time[index]=atoi(token);
+	 while(token!=NULL)
+	 {
 	   	token = strtok(NULL,":");
 	        if(token!=NULL)
 	        {
-	        	puts(token);
+	  //      	puts(token);
 	        	time[++index]=atoi(token);
 	        }
-	  }
+	 }
+	//Push scanned in trays 
+	while(scan_in)
+	{
+	  push();
 	  scan_in--;
-	  if(current_node!=NULL)
-	  {
-	   current_node->next=push();
-	   current_node=current_node->next;
-	  }
-	  else
-          current_node=push();
-	  if(first_node==NULL)
-	  	first_node=current_node;
 	}
-	/////////////////////////////
+	//pop scanned out trays
 	while(scan_out) 
 	{
-	  first_node=first_node->next;
 	  pop();	
 	  scan_out--; 
 	}
-///////////////////////////////////////////
-//	adj1 adj2	
+	//pop all trays if 12am is the time e.g., scanned in at 11:00 and 12:00 am is the time	
+	//apply adjustment 1
+	adjustment_1();
+	//apply adjustment 2
+	adjustment_2();
       }
   }
-  fclose(infile);	
+  fclose(infile);
+  printf ("Accumulated number of trays on sushi train %d\n",grandTotal);
+  deleteFIFO();
+
   return 0;
 }
-////////////////////////////////////////////////////////////////////////////////////////
- ptrTray push()
-  {
-	ptrTray ptr= (ptrTray) malloc(sizeof(trayType));//&newTray;
+
+void push(void)
+{
+	ptrTray ptr= (ptrTray) malloc(sizeof(trayType));
 	ptr->hour=time[0];
 	ptr->min=time[1];
 	ptr->sec=time[2];
 	ptr->next=NULL;
-	return ptr;
-  }
- void pop()
-  {
+	grand_total++;
+	//nodes are pushed into a FIFO 
+	if(current_node!=NULL)
+	{
+	   current_node->next=ptr;
+	   current_node=current_node->next;
+	}
+	else
+	{    
+	   current_node=ptr;
+	   first_node=current_node;
+	}
+}
+
+void pop(void)
+{
    ptrTray temp = (ptrTray) malloc(sizeof(trayType));
    temp=first_node;
    first_node=first_node->next;
+   grand_total--;
    free(temp);   
-  }
- void adjustment_1()
-  {
-   //from 12am to 4pm //add start of the day aswell
-   if(first_node->hour<=16)
+}
+void adjustment_1(void)
+{
+   //from 12am to 4pm
+   if(time[0]>=3) && (time[0]<=16))
    {
-	   while(first_node->next!=current_node)
-	   {
-	     if((current_node->hour-first_node->hour)==3) //think about it if all of the nodes were added at same time
-	     //3hrs ago ? for this u need current timestamp no matter if the scan in is there or not!
-	     {
-	       
-	     }
-	   }
-   }	   
-   //from 4pm to 12am
-  }
+     ptrTray ptrTemp=first_node;
+     while(ptrTemp!=NULL)
+     {
+       ptrTemp=ptrTemp->next;
+       if((time[0]-first_node->hour)==3)
+	 pop();
+     }
+   }
+   //from 4pm to 12am 
+   else if(time[0]>16 && time[0]<24)	   
+   {
+     ptrTray ptrTemp=first_node;
+     while(ptrTemp!=NULL)
+     {
+       ptrTemp=ptrTemp->next;
+       if((time[0]-first_node->hour)==1.5)
+	 pop();
+     }
+   }  
+}
+void adjustment_2()
+{
+ if(grand_total<0)
+   grand_total=0;
+}
+void deleteFIFO(void)
+{
+ ptrTray temp;
+ while(first_node!=NULL)
+ {  
+  temp=first_node;
+  first_node=first_node->next;
+  free(temp);
+ } 
+}
+

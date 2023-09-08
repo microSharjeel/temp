@@ -1,17 +1,14 @@
+#define MAX_LEN 23
 //node struct sushi tray
-
 typedef struct tray {
   unsigned short hour,
   unsigned short min,
   unsigned short sec,
   struct tray* next,
 }trayType,*ptrTray;
-
-#define MAX_LEN 23
-
-ptrTray push();
-//traverse_count()
+ptrTray push(void);
 void pop(void);
-//adjustment1()
-//adjustment2()
+void adjustment1(void);
+void adjustment2(void);
+void deleteFIFO(void);
 

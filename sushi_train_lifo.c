@@ -132,26 +132,30 @@ void adjustment_1(void)
      }
    }
    //from 4pm to 12am 
-   else if(time[0]>=16 && time[0]<24)	   
+   if(time[0]>=16 && time[0]<24)	   
    {
      ptrTray ptrTemp=first_node;
      while(ptrTemp!=NULL)
      {
        ptrTemp=ptrTemp->next;
      //  printf("outer\n");
-       if ( (time[0]-first_node->hour==1) && (time[1]-first_node->min ==30) && (time[2]-first_node->sec ==0 ) ) 
+       if ( (time[0]-first_node->hour==1) && (time[1]-first_node->min ==0) && (time[2]-first_node->sec ==0 ) ) 
        {
 	 pop();
 	 printf("there\n");
 	} 
        else
        { 
-         unsigned short t = 60-first_node->hour;
+         unsigned short t = 60-first_node->min;
 	 if( (time[0]-first_node->hour > 1) &&  ( (time[1]+t) ==30) )
 	 {
 	    pop();
 	    printf("here2\n");
-	 }  
+	 }
+	 if( (time[0]-first_node->hour > 1) && time[1]==0 )  
+	 {
+	   pop();
+	 }
 	}
      }
    }  

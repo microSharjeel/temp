@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sushi_train.h>
-
+#include "sushi_train.h"
+#define MAX_LEN 23
 FILE* infile;
 const char* file_path;
 char str[MAX_LEN+1];
 char* token;
-char* sub_str[4];
-unsigned short index;
+char* sub_str[4];///////// problem here one ch per array element
+unsigned short indx;
 unsigned short scan_in,scan_out;
 unsigned short time[3];
 static ptrTray current_node=NULL;
@@ -17,7 +17,7 @@ static unsigned short grand_total;
 
 int main(int argc,char**argv)
 {
-  index=0;
+  indx=0;
   file_path=argv[1];
   infile=fopen(file_path,"r");
   if(infile==NULL)
@@ -31,9 +31,10 @@ int main(int argc,char**argv)
   	while(fscanf(infile,"%s",str)!=EOF)
 	{
 	  //printf("%s\n",str);
+	  indx=0;
 	  token = strtok(str,",");
 	  //puts(token);
-	  sub_str[index++]=token;
+	  sub_str[indx++]=token;
 	  while(token!=NULL)
 	  {
 	   	token = strtok(NULL,",");
@@ -41,23 +42,23 @@ int main(int argc,char**argv)
 	        if(token!=NULL)
 	        {
 	    //    	puts(token);
-	        	sub_str[index]=token;
+	        	sub_str[indx]=token;//atoi here just like time below
 	        }
-	        index++;
+	        indx++;
 	  }
-	index=0;
-	scan_in=atoi(sub_str[2]);
+	indx=0;
+	scan_in=atoi(sub_str[2]);//put value in scan in directly 
 	scan_out=atoi(sub_str[3]);
 	token = strtok(sub_str[1],":");
 	//puts(token);
-        time[index]=atoi(token);
+        time[indx]=atoi(token);
 	 while(token!=NULL)
 	 {
 	   	token = strtok(NULL,":");
 	        if(token!=NULL)
 	        {
 	  //      	puts(token);
-	        	time[++index]=atoi(token);
+	        	time[++indx]=atoi(token);
 	        }
 	 }
 	//Push scanned in trays 
@@ -80,7 +81,7 @@ int main(int argc,char**argv)
       }
   }
   fclose(infile);
-  printf ("Accumulated number of trays on sushi train %d\n",grandTotal);
+  printf ("Accumulated number of trays on sushi train %d\n",grand_total);
   deleteFIFO();
 
   return 0;
@@ -118,7 +119,7 @@ void pop(void)
 void adjustment_1(void)
 {
    //from 12am to 4pm
-   if(time[0]>=3) && (time[0]<=16))
+   if((time[0]>=3) && (time[0]<=16))
    {
      ptrTray ptrTemp=first_node;
      while(ptrTemp!=NULL)

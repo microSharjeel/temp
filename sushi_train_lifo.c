@@ -94,8 +94,8 @@ void push(void)
 	//nodes are pushed into a FIFO 
 	if(current_node!=NULL)
 	{
-	   current_node->next=ptr;
-	   current_node=current_node->next;
+	   ptr->next=current_node;
+	   current_node=ptr;
 	}
 	else
 	{    
@@ -107,10 +107,10 @@ void push(void)
 void pop(void)
 {
    //Nodes are popped from FIFO	
-   if(first_node!=NULL){
+   if(current_node!=NULL){
    ptrTray temp = (ptrTray) malloc(sizeof(trayType));
-   temp=first_node;
-   first_node=first_node->next;
+   temp=current_node;
+   current_node=current_node->next;
    grand_total--;
    //printf("popped");
    free(temp); }  
@@ -164,10 +164,10 @@ void adjustment_2()
 void deleteFIFO(void)
 {
  ptrTray temp;
- while(first_node!=NULL)
+ while(current_node!=NULL)
  {  
-  temp=first_node;
-  first_node=first_node->next;
+  temp=current_node;
+  current_node=current_node->next;
   free(temp);
  } 
 }
